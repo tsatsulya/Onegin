@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-int size_of_file(FILE* file);
-int number_of_lines(FILE* file);
+#include <assert.h>
 
 
 typedef struct _file {
@@ -14,9 +13,13 @@ typedef struct _string {
     int length;
 } row;
 
+int size_of_file(FILE* file);
+int number_of_lines(FILE* file);
 row* initialization (buffer* buf, int* num_of_str);
 buffer* _read (const char file_name[], const char mode[]);
 int string_handling(char* full_line, row* struct_array);
+void print(row* array, int row_count);
+
 
 int main(int argc, char **argv)
 {
@@ -25,13 +28,11 @@ int main(int argc, char **argv)
 
     buffer* buf = _read("in.txt", "r");
     FILE* file_out = fopen("SortedText.txt", "w");
-    //  ПРОВЕРИТЬ, НОРМАЛЬНО ЛИ ОТКРЫЛИСЬ ФАЙЛЫ 
-
-
+    //  ПРОВЕРИТЬ, НОРМАЛЬНО ЛИ ОТКРЫЛИСЬ ФАЙЛЫ  
     int row_count = 0;
-
-    //row* struct_array = initialization (buf, &row_count);
-    printf("number of lines: %d \n", row_count);
+    row* struct_array = initialization (buf, &row_count);
+    printf("Row count is %d\n\n", row_count);
+    print(struct_array, row_count);
 
     puts("\n\n-------------------------- end -------------------------------------\n\n"); 
 
@@ -40,12 +41,21 @@ int main(int argc, char **argv)
     return 0;
 }
 
+
+void print(row* array, int row_count) {
+    for (int i=0; i<row_count; ++i) {
+        printf("Row #%d: { %s }\n", i+1, (array+i)->string);
+        printf("Size of row #%d is %d\n\n", i+1, (array+i)->length);
+    }
+}
+
 int size_of_file(FILE* file) {
 
     fseek(file, 0L, SEEK_END);
     return ftell(file);
 
 }
+
 int number_of_lines(FILE* file) {
 
     rewind(file);
@@ -67,16 +77,29 @@ int number_of_lines(FILE* file) {
 
 buffer* _read (const char file_name[], const char mode[])
 {
+    puts("--> reading input file...\n");
+
     FILE* file = fopen (file_name, mode);
+
+    if (file) {
+        puts("--> file read successfully\n"); }
+    else {
+        puts("!!!  reading error  !!!"); assert(0); }
 
     buffer* elem = (buffer*) calloc (1, sizeof (buffer));
 
     elem -> size = size_of_file(file);
 
+    printf("--> read file size: %d\n\n", elem->size);
+    
     char* buffer = (char*) calloc(elem->size, sizeof (char));
     elem -> buffer = buffer;
 
-    fread (buffer, sizeof(char), elem -> size, file);
+    rewind(file);
+    int read_objects = fread (elem->buffer, sizeof(char), elem -> size, file);
+    rewind(file);
+
+    printf("--> number of read objects: %d\n\n", read_objects);
 
     fclose (file);
 
@@ -85,19 +108,28 @@ buffer* _read (const char file_name[], const char mode[])
 
 row* initialization (buffer* buf, int* row_count)
 {
+    puts("--> rows nitialization...\n");
+
+    if ( buf == NULL || row_count == NULL) { puts("!!!  input error  !!!"); assert(0); }
+
     row* struct_array = (row*) calloc(buf->size, sizeof(row));
+
+    if (struct_array == NULL) { puts("!!!  failed to allocate memory  !!!"); assert(0); }
 
     *row_count = string_handling(buf -> buffer, struct_array);
 
     struct_array = realloc (struct_array, sizeof(struct_array[0]) * (*row_count));
 
+    if (struct_array == NULL) {puts("!!!  failed to reallocate memory  !!!"); assert(0);}
+
     return struct_array;
 }
 
-
 int string_handling(char* full_line, row* struct_array) 
 {
-    // ПРОВЕРКА ВЗОДНЫХЗ ДАННЫХ!!!!!!!
+    puts("--> string handling...\n");
+
+    if ( full_line == NULL || struct_array == NULL) { puts("!!!  input error  !!!"); assert(0); }
 
     int row_count = 0;
     struct_array[0].string = full_line;
@@ -107,8 +139,9 @@ int string_handling(char* full_line, row* struct_array)
         if (full_line[i] == '\n' || full_line[i] == '\r')  {
             
             full_line[i] = '\0';
+            row_count++;
 
-            struct_array[++row_count].string = full_line + i + 1;
+            struct_array[row_count].string = full_line + i + 1;
             struct_array[row_count - 1].length = struct_array[row_count].string - struct_array[row_count- 1].string - 1;
 
         }   
