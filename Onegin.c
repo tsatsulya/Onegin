@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
+#include <string.h>
 
 typedef struct _file {
     char* buffer;
@@ -19,6 +19,7 @@ row* initialization (buffer* buf, int* num_of_str);
 buffer* _read (const char file_name[], const char mode[]);
 int string_handling(char* full_line, row* struct_array);
 void print(row* array, int row_count);
+void swap(row* array, int x, int y);
 
 
 int main(int argc, char **argv)
@@ -29,18 +30,22 @@ int main(int argc, char **argv)
     buffer* buf = _read("in.txt", "r");
     FILE* file_out = fopen("SortedText.txt", "w");
     //  ПРОВЕРИТЬ, НОРМАЛЬНО ЛИ ОТКРЫЛИСЬ ФАЙЛЫ  
+
     int row_count = 0;
     row* struct_array = initialization (buf, &row_count);
     printf("Row count is %d\n\n", row_count);
+
+    print(struct_array, row_count);
+    swap(struct_array, 1, 2);
     print(struct_array, row_count);
 
-    puts("\n\n-------------------------- end -------------------------------------\n\n"); 
 
     fclose(file_out);
+
+    puts("\n\n-------------------------- end -------------------------------------\n\n"); 
     
     return 0;
 }
-
 
 void print(row* array, int row_count) {
     for (int i=0; i<row_count; ++i) {
@@ -147,4 +152,25 @@ int string_handling(char* full_line, row* struct_array)
         }   
     }
     return row_count;
+}
+
+void swap(row* array, int x, int y) {
+    row tmp = *(array+x);
+    *(array + x) = *(array+y);
+    *(array+y) =  tmp;
+}
+
+int cmp(char* s1, char* s2) {
+    if (strcmp(s1, s2) >= 0) return 1;
+    return 0;
+}
+
+void qsort(row* rows_array, int row_count, int starter){
+    if (row_count <= 1) return;
+
+    for (int i = 0; i<row_count; ++i) {
+        if (i == starter) continue;
+        char* str1 = (rows_array + starter)->string;
+        char* str2 = (rows_array + i)->string;
+    }
 }
