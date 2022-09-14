@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include <time.h> 
 
 typedef struct _file {
     char* buffer;
@@ -37,10 +38,11 @@ int main(int argc, char **argv)
     int row_count = 0;
     row* struct_array = initialization (buf, &row_count);
     printf("Row count is %d\n\n", row_count);
-
-    print(struct_array, row_count);
+    double start = clock();
+    puts("dd");
     qsort_(struct_array, struct_array+row_count-1);
-    //puts("\n\n\naaaaaaaaaaaaaaaaaaaaaaaa");
+    double end = clock();
+    printf("TIME: %lf\n\n", (end-start)/1000);
     print(struct_array, row_count);
     
     fclose(file_out);
@@ -156,6 +158,7 @@ int string_handling(char* full_line, row* struct_array)
 
         }   
     }
+    puts("done!");
     return row_count;
 }
 
@@ -168,7 +171,7 @@ int cmp_(const char* s1, const char* s2) {
 
 void swap_(row* xp, row* yp)
 {
-    printf("SWAP:3  { %s -> %s }\n\n", xp->string, yp->string);
+   // printf("SWAP:3  { %s -> %s }\n\n", xp->string, yp->string);
     row temp = *xp;
     *xp = *yp;
     *yp = temp;
@@ -179,30 +182,27 @@ void qsort_(row* i, row* j) {
     row* end = j;
     int size = j-i;
     if (size <= 1) return;
-    printf(" -> SIZE: %d\n", size);
+    //printf(" -> SIZE: %d\n", size);
     char* element = (i+rand()%size)->string;
-    printf(" -> ELEMENT: %s\n", element);
-    printf(" -> BEGIN: %s   END: %s\n\n", i->string, (i+size)->string);
+    //printf(" -> ELEMENT: %s\n", element);
+    //printf(" -> BEGIN: %s   END: %s\n\n", i->string, (i+size)->string);
     while (1) {
-    while (strcmp(element, i->string)>0){
+        while (strcmp(element, i->string)>=0) 
+            i++;
+            //printf("     -> i = %d, { %s }\n", i, i->string);
 
-        i++;
-        printf("     -> i = %d, { %s }\n", i, i->string);
-    }
+        while (strcmp(element, j->string)<0)
+            j--;
+            //printf("     -> j = %d, { %s }\n", j, j->string);
 
-    puts("");
-
-    while (strcmp(element, j->string)<0){
-        j--;
-        printf("     -> j = %d, { %s }\n", j, j->string);
-
-    } 
-    puts("");
-    if (i->string == j->string) {
-        qsort_(start, i-1);
-        qsort_(j+1, end);
-        return;
-    }
-    swap_(i, j);
+        if (i->string == j->string) {
+            qsort_(start, i-1);
+            qsort_(j+1, end);
+            return;
+        }
+        swap_(i, j);
     }
 }
+
+
+//ЭТА ХУЙНЯ НЕ РАБОТАЕТ, ЕСЛИ ЕСТЬ ПОВТОРЯЮЩИЕСЯ СТРОКИБ А ЕЩЕ ОНА МЕДЛЕННАЯ as fuck
