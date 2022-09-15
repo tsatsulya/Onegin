@@ -14,17 +14,31 @@ typedef struct _string {
     int length;
 } row;
 
+const int DEBUG = 1;
+
+
 int size_of_file(FILE* file);
+
 int number_of_lines(FILE* file);
+
 row* initialization (buffer* buf, int* num_of_str);
+
 buffer* _read (const char file_name[], const char mode[]);
+
 int string_handling(char* full_line, row* struct_array);
+
 void print(row* array, int row_count);
+
 row* HoarePartition (row* p, row* r);
+
 void QuickSort(row* start, row* end);
+
 void swap(row* array, int x, int y);
+
 int cmp_(const char* s1, const char* s2);
+
 void qsort_(row* begin, row* end);
+
 
 int main(int argc, char **argv)
 {
@@ -33,17 +47,26 @@ int main(int argc, char **argv)
 
     buffer* buf = _read("in.txt", "r");
     FILE* file_out = fopen("SortedText.txt", "w");
+
     //  ПРОВЕРИТЬ, НОРМАЛЬНО ЛИ ОТКРЫЛИСЬ ФАЙЛЫ  
 
     int row_count = 0;
     row* struct_array = initialization (buf, &row_count);
-    printf("Row count is %d\n\n", row_count);
+
     double start = clock();
-    puts("dd");
-    qsort_(struct_array, struct_array+row_count-1);
-    double end = clock();
-    printf("TIME: %lf\n\n", (end-start)/1000);
+
     print(struct_array, row_count);
+ 
+    qsort_(struct_array, struct_array+row_count-1);
+ 
+    print(struct_array, row_count);
+ 
+ 
+    double end = clock();
+ 
+ 
+    printf("TIME: %lf\n\n", (end-start)/1000);
+
     
     fclose(file_out);
 
@@ -140,7 +163,7 @@ row* initialization (buffer* buf, int* row_count)
 int string_handling(char* full_line, row* struct_array) 
 {
     puts("--> string handling...\n");
-
+    int n_count = 0;
     if ( full_line == NULL || struct_array == NULL) { puts("!!!  input error  !!!"); assert(0); }
 
     int row_count = 0;
@@ -155,14 +178,11 @@ int string_handling(char* full_line, row* struct_array)
 
             struct_array[row_count].string = full_line + i + 1;
             struct_array[row_count - 1].length = struct_array[row_count].string - struct_array[row_count- 1].string - 1;
-
         }   
     }
     puts("done!");
     return row_count;
 }
-
-
 
 int cmp_(const char* s1, const char* s2) {
     if (strcmp(s1, s2) >= 0) return 1;
@@ -178,24 +198,42 @@ void swap_(row* xp, row* yp)
 }
 
 void qsort_(row* i, row* j) {
+
+    
     row* start = i;
     row* end = j;
     int size = j-i;
+    
     if (size <= 1) return;
-    //printf(" -> SIZE: %d\n", size);
-    char* element = (i+rand()%size)->string;
-    //printf(" -> ELEMENT: %s\n", element);
-    //printf(" -> BEGIN: %s   END: %s\n\n", i->string, (i+size)->string);
+
+    int r = rand()%size;
+    
+    char* element = (i+r)->string;
+
+    if (DEBUG) {
+        printf(" -> SIZE: %d\n", size);
+        printf("r = %d\n", r);
+        printf(" -> ELEMENT: %s\n", element);
+        printf(" -> BEGIN: %s   END: %s\n\n", i->string, (i+size)->string);
+    }
+
     while (1) {
-        while (strcmp(element, i->string)>=0) 
+        while (strcmp(element, i->string)>=0)  {
+            
             i++;
-            //printf("     -> i = %d, { %s }\n", i, i->string);
+            if (DEBUG) printf("     -> i = %d, { %s }\n", i, i->string);
 
-        while (strcmp(element, j->string)<0)
+        }
+
+        while (strcmp(element, j->string)<0) {
+        
             j--;
-            //printf("     -> j = %d, { %s }\n", j, j->string);
-
-        if (i->string == j->string) {
+            if (DEBUG) printf("     -> j = %d, { %s }\n", j, j->string);
+        
+        }
+        
+        
+        if (j < i) {
             qsort_(start, i-1);
             qsort_(j+1, end);
             return;
@@ -205,4 +243,6 @@ void qsort_(row* i, row* j) {
 }
 
 
-//ЭТА ХУЙНЯ НЕ РАБОТАЕТ, ЕСЛИ ЕСТЬ ПОВТОРЯЮЩИЕСЯ СТРОКИБ А ЕЩЕ ОНА МЕДЛЕННАЯ as fuck
+//ЭТА ХУЙНЯ НЕ РАБОТАЕТ, ЕСЛИ ЕСТЬ ПОВТОРЯЮЩИЕСЯ СТРОКИ!!!!!!!!!!!!!!!!!!!
+//ТЕПЕРЬ ЭТА ХУЙНЯ РАБОТАЕТ, ЕСЛИ ПОВТОРЯЮТСЯ СТРОКИ!!!! НАДО УБРАТЬ \N
+//ЭТА ХУЙНЯ СНОВА НЕ РАБОТАЕТ, НАДО МЕНЯТЬ АЛГОРИТМ И СРАТЬ НА ПОВТОРЯЮЩИЕСЯ СТРОКИ!!!
