@@ -33,12 +33,10 @@ row* HoarePartition (row* p, row* r);
 
 void QuickSort(row* start, row* end);
 
-void swap(row* array, int x, int y);
-
 int cmp_(const char* s1, const char* s2);
 
 void qsort_(row* begin, row* end);
-
+row* partition(row* start, row* end);
 
 int main(int argc, char **argv)
 {
@@ -191,58 +189,51 @@ int cmp_(const char* s1, const char* s2) {
 
 void swap_(row* xp, row* yp)
 {
-   // printf("SWAP:3  { %s -> %s }\n\n", xp->string, yp->string);
+    if (DEBUG) printf("\n\nSWAP:3  { %s -> %s }\n\n", xp->string, yp->string);
     row temp = *xp;
     *xp = *yp;
     *yp = temp;
 }
 
 void qsort_(row* i, row* j) {
-
-    
     row* start = i;
     row* end = j;
-    int size = j-i;
-    
+    int size = j-i+1;
     if (size <= 1) return;
-
-    int r = rand()%size;
-    
-    char* element = (i+r)->string;
-
-    if (DEBUG) {
-        printf(" -> SIZE: %d\n", size);
-        printf("r = %d\n", r);
-        printf(" -> ELEMENT: %s\n", element);
-        printf(" -> BEGIN: %s   END: %s\n\n", i->string, (i+size)->string);
+    if (size == 2) {
+        if (strcmp(i->string, j->string) > 0) 
+            swap_(i, j);
+        return;
     }
 
-    while (1) {
-        while (strcmp(element, i->string)>=0)  {
-            
+    if (DEBUG) printf(".................>SIZE : %d\n\n", size);
+    printf(" -> BEGIN: %s   END: %s\n\n", start->string, (end)->string);
+    //srand(time(NULL));
+    char* pivot = start->string;
+
+    i; j++;
+    while(1){
+        do { 
             i++;
-            if (DEBUG) printf("     -> i = %d, { %s }\n", i, i->string);
+            if (DEBUG) printf("i = { %s }\n\n", i->string);
+        } while ( strcmp(i->string, pivot) < 0 );
 
-        }
 
-        while (strcmp(element, j->string)<0) {
-        
+        do {
             j--;
-            if (DEBUG) printf("     -> j = %d, { %s }\n", j, j->string);
-        
-        }
-        
-        
-        if (j < i) {
-            qsort_(start, i-1);
-            qsort_(j+1, end);
-            return;
-        }
+            if (DEBUG) printf("j = { %s }\n\n", j->string);
+        } while ( strcmp(j->string, pivot) > 0 );
+
+
+
+        if (i>j) {
+            swap_(start, j); 
+            qsort_(start, j-1);
+            qsort_(i, end);
+            printf("endddd\n\n\n"); break;} 
         swap_(i, j);
     }
 }
-
-
 //ЭТА ХУЙНЯ НЕ РАБОТАЕТ, ЕСЛИ ЕСТЬ ПОВТОРЯЮЩИЕСЯ СТРОКИ!!!!!!!!!!!!!!!!!!!
 //ТЕПЕРЬ ЭТА ХУЙНЯ РАБОТАЕТ, ЕСЛИ ПОВТОРЯЮТСЯ СТРОКИ!!!! НАДО УБРАТЬ \N
 //ЭТА ХУЙНЯ СНОВА НЕ РАБОТАЕТ, НАДО МЕНЯТЬ АЛГОРИТМ И СРАТЬ НА ПОВТОРЯЮЩИЕСЯ СТРОКИ!!!
