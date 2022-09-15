@@ -215,7 +215,10 @@ void qsort_(row* i, row* j) {
     while(1){
         do { 
             i++;
+            puts("nyaaaaaa");
+            if (!i->string) break;
             if (DEBUG) printf("i = { %s }\n\n", i->string);
+
         } while ( strcmp(i->string, pivot) < 0 );
 
 
