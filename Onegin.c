@@ -17,7 +17,7 @@ typedef struct _string {
     int length;
 } row;
 
-const int DEBUG = 1;
+const int DEBUG = 0;
 
 
 int size_of_file(FILE* file);
@@ -34,13 +34,15 @@ void print(row* array, int row_count);
 
 int cmp_(const char* s1, const char* s2);
 
-void qsort_(row* begin, row* end);
+void qsort_(row* begin, row* end, int  REVERSE);
 
 int strcmp_reverse(char*  i, char* j);
 void qsort_reverse(row* i, row* j);
 
+void fprint_ (const row struct_str[], int size, FILE* file);
 int main(int argc, char **argv)
 {
+    const int REVERSE = 1;
     puts("\n\n------------------------- begin ------------------------------------\n\n"); 
 
 
@@ -51,24 +53,23 @@ int main(int argc, char **argv)
 
     int row_count = 0;
     row* struct_array = initialization (buf, &row_count);
-
+    printf("SIZE = %d\n", row_count);
     double start = clock();
 
-    print(struct_array, row_count);
+    //print(struct_array, row_count);
  
-    qsort_reverse(struct_array, struct_array+row_count-1);
+    qsort_(struct_array, struct_array+row_count-1, REVERSE);
  
-    print(struct_array, row_count);
+    //print(struct_array, row_count);
  
-    printf("strcmp : %d\n", strcmp_reverse("aaaa", "aaaa"));
     double end = clock();
  
  
-    printf("TIME: %lf\n\n", (end-start)/1000);
-
-    
+    printf("TIME: %lf\n\n", (end-start)/(CLOCKS_PER_SEC));
+    FILE* sorted_file = fopen("SortStr.txt", "w");
+    fprint_(struct_array, row_count, file_out);
     fclose(file_out);
-
+    
     puts("\n\n-------------------------- end -------------------------------------\n\n"); 
     
     return 0;
@@ -196,19 +197,20 @@ void swap_(row* xp, row* yp)
     *yp = temp;
 }
 
-void qsort_(row* i, row* j) {
+void qsort_(row* i, row* j, int REVERSE) {
     row* start = i;
     row* end = j;
     int size = j-i+1;
     if (size <= 1) return;
     if (size == 2) {
-        if (strcmp(i->string, j->string) > 0) 
+        int res = REVERSE ? strcmp_reverse(i->string, j->string) : strcmp(i->string, j->string);
+        if (res > 0) 
             swap_(i, j);
         return;
     }
 
     if (DEBUG) printf(".................>SIZE : %d\n\n", size);
-    printf(" -> BEGIN: %s   END: %s\n\n", start->string, (end)->string);
+    if (DEBUG) printf(" -> BEGIN: %s   END: %s\n\n", start->string, (end)->string);
     //srand(time(NULL));
     char* pivot = start->string;
 
@@ -216,74 +218,39 @@ void qsort_(row* i, row* j) {
     while(1){
         do { 
             i++;
-            puts("nyaaaaaa");
             if (!i->string) break;
             if (DEBUG) printf("i = { %s }\n\n", i->string);
 
-        } while ( strcmp(i->string, pivot) < 0 );
+        } while ( (REVERSE ? strcmp_reverse(i->string, pivot) : strcmp(i->string, pivot)) < 0);
 
 
         do {
             j--;
             if (DEBUG) printf("j = { %s }\n\n", j->string);
-        } while ( strcmp(j->string, pivot) > 0 );
 
-
-
-        if (i>j) {
-            swap_(start, j); 
-            qsort_(start, j-1);
-            qsort_(i, end);
-            printf("endddd\n\n\n"); break;} 
-        swap_(i, j);
-    }
-}
-
-
-void qsort_reverse(row* i, row* j) {
-    row* start = i;
-    row* end = j;
-    int size = j-i+1;
-    if (size <= 1) return;
-    if (size == 2) {
-        if (strcmp_reverse(i->string, j->string) > 0) 
-            swap_(i, j);
-        return;
-    }
-
-    if (DEBUG) printf(".................>SIZE : %d\n\n", size);
-    printf(" -> BEGIN: %s   END: %s\n\n", start->string, (end)->string);
-    //srand(time(NULL));
-    char* pivot = start->string;
-
-    i; j++;
-    while(1){
-        do { 
-            i++;
-            puts("nyaaaaaa");
-            if (!i->string) break;
-            if (DEBUG) printf("i = { %s }\n\n", i->string);
-
-        } while ( strcmp_reverse(i->string, pivot) < 0 );
-
-
-        do {
-            j--;
-            if (DEBUG) printf("j = { %s }\n\n", j->string);
-        } while ( strcmp_reverse(j->string, pivot) > 0 );
-
+        } while ( (REVERSE ? strcmp_reverse(j->string, pivot) : strcmp(j->string, pivot)) > 0);
+        
 
 
         if (i>j) {
             swap_(start, j); 
-            qsort_reverse(start, j-1);
-            qsort_reverse(i, end);
+            qsort_(start, j-1, REVERSE);
+            qsort_(i, end, REVERSE);
             break;} 
         swap_(i, j);
     }
 }
 
 
+
+
+void fprint_ (const row struct_str[], int size, FILE* file) {
+    for (int i = 0; i < size; i ++)
+    {   
+        if (struct_str[i].string[0] != '\0')
+            fprintf (file, "  [%s]\n", struct_str[i].string);
+    }
+}
 
 int strcmp_reverse(char*  i, char* j) {
     char* str1 = i;
