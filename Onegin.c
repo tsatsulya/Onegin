@@ -5,24 +5,32 @@
 #include <time.h> 
 
 
-#define max(x, y) ( (x) > (y) ? (x) : (y) )
-#define min(x, y) ( (x) < (y) ? (x) : (y) )
-typedef struct _file {
+// int int_cmp(int a, int b)
+
+typedef struct _file { // File or file_t
     char* buffer;
     int size;
+    // move all calculated values here
 } buffer;
 
 typedef struct _string {
     char* string;
     int length;
-} row;
+} row; // line?
 
-const int DEBUG = 0;
+// #ifdef DEBUG
+//     void debug_print(const char* msg) {
+//         fprintf(stderr, "%s", msg);
+//     }
+// #else
+//     void debug_print(const char* msg) {
+//     }
+// #endif
 
+
+void bubbleSort(row* array, int row_count);
 
 int size_of_file(FILE* file);
-
-int number_of_lines(FILE* file);
 
 row* initialization (buffer* buf, int* num_of_str);
 
@@ -32,45 +40,58 @@ int string_handling(char* full_line, row* struct_array);
 
 void print(row* array, int row_count);
 
-int cmp_(const char* s1, const char* s2);
+// enum CmpMode {
+//     STRAIGHT,
+//     REVERSE
+// };
 
 void qsort_(row* begin, row* end, int  REVERSE);
 
 int strcmp_reverse(char*  i, char* j);
-void qsort_reverse(row* i, row* j);
 
 void fprint_ (const row struct_str[], int size, FILE* file);
-int main(int argc, char **argv)
+
+
+int main()
 {
-    const int REVERSE = 1;
-    puts("\n\n------------------------- begin ------------------------------------\n\n"); 
+    //const int REVERSE = 1;
+    const int DEBUG = 0;
+    
+    puts("\n\n------------------------------------ begin ------------------------------------\n\n"); 
 
 
     buffer* buf = _read("in.txt", "r");
     FILE* file_out = fopen("SortedText.txt", "w");
-
-    //  ПРОВЕРИТЬ, НОРМАЛЬНО ЛИ ОТКРЫЛИСЬ ФАЙЛЫ  
+    if (!buf) return 1;
+    if (!file_out) return 1;
 
     int row_count = 0;
-    row* struct_array = initialization (buf, &row_count);
-    printf("SIZE = %d\n", row_count);
+
+    row* full_text = initialization (buf, &row_count);
+
+
     double start = clock();
 
-    //print(struct_array, row_count);
+    //print(full_text, row_count);
  
-    qsort_(struct_array, struct_array+row_count-1, REVERSE);
- 
-    //print(struct_array, row_count);
- 
+    //qsort_(full_text, full_text+row_count-1, REVERSE);
+  
+    bubbleSort(full_text, row_count);
+
     double end = clock();
- 
- 
+
+
+    printf("ROW COUNT = %d\n", row_count);
     printf("TIME: %lf\n\n", (end-start)/(CLOCKS_PER_SEC));
-    FILE* sorted_file = fopen("SortStr.txt", "w");
-    fprint_(struct_array, row_count, file_out);
+
+    fprint_(full_text, row_count, file_out);
+
     fclose(file_out);
+
+    free(buf);
+    free(full_text);
     
-    puts("\n\n-------------------------- end -------------------------------------\n\n"); 
+    puts("\n\n------------------------------------ end -------------------------------------\n\n"); 
     
     return 0;
 }
@@ -78,20 +99,31 @@ int main(int argc, char **argv)
 
 
 void print(row* array, int row_count) {
+
     for (int i=0; i<row_count; ++i) {
+
         printf("Row #%d: { %s }\n", i+1, (array+i)->string);
         printf("Size of row #%d is %d\n\n", i+1, (array+i)->length);
+
     }
 }
 
 int size_of_file(FILE* file) {
 
+    if (file) assert("failed to read file");
+
     fseek(file, 0L, SEEK_END);
-    return ftell(file);
+
+    int size = ftell(file);
+    printf("SIZE OF FILE: %d\n\n", size);
+
+    return size;
 
 }
 
 int number_of_lines(FILE* file) {
+
+    if (file) assert("failed to read file");
 
     rewind(file);
     int buffer = 0;
@@ -116,10 +148,12 @@ buffer* _read (const char file_name[], const char mode[])
 
     FILE* file = fopen (file_name, mode);
 
+
     if (file) {
         puts("--> file read successfully\n"); }
     else {
-        puts("!!!  reading error  !!!"); assert(0); }
+        puts("!!!  file reading error  !!!"); assert(0); }
+
 
     buffer* elem = (buffer*) calloc (1, sizeof (buffer));
 
@@ -130,9 +164,11 @@ buffer* _read (const char file_name[], const char mode[])
     char* buffer = (char*) calloc(elem->size, sizeof (char));
     elem -> buffer = buffer;
 
+
     rewind(file);
     int read_objects = fread (elem->buffer, sizeof(char), elem -> size, file);
     rewind(file);
+
 
     printf("--> number of read objects: %d\n\n", read_objects);
 
@@ -142,28 +178,28 @@ buffer* _read (const char file_name[], const char mode[])
 }
 
 row* initialization (buffer* buf, int* row_count)
-{
+{  
     puts("--> rows nitialization...\n");
 
     if ( buf == NULL || row_count == NULL) { puts("!!!  input error  !!!"); assert(0); }
 
-    row* struct_array = (row*) calloc(buf->size, sizeof(row));
+    row* full_text = (row*) calloc(buf->size, sizeof(row));
 
-    if (struct_array == NULL) { puts("!!!  failed to allocate memory  !!!"); assert(0); }
+    if (full_text == NULL) { puts("!!!  failed to allocate memory  !!!"); assert(0); }
 
-    *row_count = string_handling(buf -> buffer, struct_array);
+    *row_count = string_handling(buf -> buffer, full_text);
 
-    struct_array = realloc (struct_array, sizeof(struct_array[0]) * (*row_count));
+    full_text = (row*)(realloc (full_text, sizeof(full_text[0]) * (*row_count)));
 
-    if (struct_array == NULL) {puts("!!!  failed to reallocate memory  !!!"); assert(0);}
+    if (full_text == NULL) {puts("!!!  failed to reallocate memory  !!!"); assert(0);}
 
-    return struct_array;
+    return full_text;
 }
 
 int string_handling(char* full_line, row* struct_array) 
 {
     puts("--> string handling...\n");
-    int n_count = 0;
+    
     if ( full_line == NULL || struct_array == NULL) { puts("!!!  input error  !!!"); assert(0); }
 
     int row_count = 0;
@@ -177,31 +213,32 @@ int string_handling(char* full_line, row* struct_array)
             row_count++;
 
             struct_array[row_count].string = full_line + i + 1;
+
             struct_array[row_count - 1].length = struct_array[row_count].string - struct_array[row_count- 1].string - 1;
         }   
     }
-    puts("done!");
+    puts("--> handling is over!\n");
     return row_count;
-}
-
-int cmp_(const char* s1, const char* s2) {
-    if (strcmp(s1, s2) >= 0) return 1;
-    return 0;
 }
 
 void swap_(row* xp, row* yp)
 {
     if (DEBUG) printf("\n\nSWAP:3  { %s -> %s }\n\n", xp->string, yp->string);
+
     row temp = *xp;
     *xp = *yp;
     *yp = temp;
 }
 
+// ptr to cmp function
 void qsort_(row* i, row* j, int REVERSE) {
+
     row* start = i;
     row* end = j;
     int size = j-i+1;
+
     if (size <= 1) return;
+
     if (size == 2) {
         int res = REVERSE ? strcmp_reverse(i->string, j->string) : strcmp(i->string, j->string);
         if (res > 0) 
@@ -212,9 +249,11 @@ void qsort_(row* i, row* j, int REVERSE) {
     if (DEBUG) printf(".................>SIZE : %d\n\n", size);
     if (DEBUG) printf(" -> BEGIN: %s   END: %s\n\n", start->string, (end)->string);
     //srand(time(NULL));
+
+
     char* pivot = start->string;
 
-    i; j++;
+    j++;
     while(1){
         do { 
             i++;
@@ -232,33 +271,38 @@ void qsort_(row* i, row* j, int REVERSE) {
         
 
 
-        if (i>j) {
-            swap_(start, j); 
+        if (i > j) {
+
+            swap_(start, j);
+
             qsort_(start, j-1, REVERSE);
             qsort_(i, end, REVERSE);
-            break;} 
+            
+            break;
+        } 
+        
         swap_(i, j);
     }
 }
 
-
-
-
 void fprint_ (const row struct_str[], int size, FILE* file) {
-    for (int i = 0; i < size; i ++)
-    {   
+
+    for (int i = 0; i < size; i ++) {
+
         if (struct_str[i].string[0] != '\0')
-            fprintf (file, "  [%s]\n", struct_str[i].string);
+            fprintf (file, "  { %s }\n", (struct_str[i].string));
     }
 }
 
 int strcmp_reverse(char*  i, char* j) {
+
     char* str1 = i;
     char* str2 = j;
+
     int len1 = strlen(str1), len2 = strlen(str2);
 
     if (DEBUG) printf("len1 = %d ; len2 = %d \n", len1, len2);
-    int min_len = min(len1, len2);
+    int min_len = (len1 < len2) ? len1 : len2;
 
 
     for (int i = 0; i < min_len; i++) {
@@ -268,10 +312,39 @@ int strcmp_reverse(char*  i, char* j) {
         if (strcmp_) return strcmp_;
     }
 
-    if (len1<len2) return -1;
-    if (len1>len2) return 1;
-    return 0;
+    return len1-len2;
+
+    // if (len1<len2) return -1;
+    // if (len1>len2) return 1;
+    // return 0;
 }
+
+
+
+
+
+void bubbleSort(row* array, int row_count) {
+
+  for (int i = 0; i < row_count - 1; ++i) {
+      
+    for (int j = 0; j < row_count - i - 1; ++j) {
+      
+      if (strcmp( (array + j) ->string, (array + j + 1)->string) > 0) {
+        
+        swap_(array + j, array + j + 1);
+
+      }
+    }
+  }
+}
+
+
+
 //ЭТА ХУЙНЯ НЕ РАБОТАЕТ, ЕСЛИ ЕСТЬ ПОВТОРЯЮЩИЕСЯ СТРОКИ!!!!!!!!!!!!!!!!!!!
 //ТЕПЕРЬ ЭТА ХУЙНЯ РАБОТАЕТ, ЕСЛИ ПОВТОРЯЮТСЯ СТРОКИ!!!! НАДО УБРАТЬ \N
 //ЭТА ХУЙНЯ СНОВА НЕ РАБОТАЕТ, НАДО МЕНЯТЬ АЛГОРИТМ И СРАТЬ НА ПОВТОРЯЮЩИЕСЯ СТРОКИ!!!
+//проверка входных данных
+//DEBUG??????????????????????????????????????????
+//аргументы для консоли 
+//комментарии
+// ЗДЕСТЬ БЫЛ ВАСЯ
