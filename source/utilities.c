@@ -1,8 +1,8 @@
-#include "../header/utilities.h"
+#include "utilities.h"
 
-void swap_(line* xp, line* yp)
+void swap_(string* xp, string* yp)
 {
-    line temp = *xp;
+    string temp = *xp;
     *xp = *yp;
     *yp = temp;
 }
