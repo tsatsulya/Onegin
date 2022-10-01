@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "debug.h"
 
 int split_string(char* full_line, string* array_of_lines) ;
 

@@ -14,9 +14,9 @@ int main() {
 
     puts("\n\n------------------------------------ begin ------------------------------------\n\n"); //
 
-    string* buf = read_buffer("input_files/in.txt");
+    string* buf = read_buffer("input_files/anin.txt");
 
-    int line_count = count_lines(buf-> buffer);
+    int line_count = count_lines(buf->buffer);
 
     if (errno) {
         perror(" Damn fopen: ");
@@ -36,16 +36,18 @@ int main() {
 
     double start = clock();
 
-    if (GLOBAL_DEBUG_MODE >= 2) dbg_print_lines(full_text, line_count);
+    if (GLOBAL_DEBUG_MODE > 3) dbg_print_lines(full_text, line_count);
 
 
     // bubble_sort(full_text, line_count);
-    qsort_(full_text, line_count, sizeof(string*), strcmp_reverse);
+    qsort_(full_text, line_count, sizeof(string*), strcmp_);
 
     double end = clock();
 
-    // TODO: extraaaAAAAaaaAAAct!
-    if (GLOBAL_DEBUG_MODE>=3) dbg_print_lines(full_text, line_count);
+    if (GLOBAL_DEBUG_MODE>3) dbg_print_lines(full_text, line_count);
+
+
+    //dbg_print_lines(full_text, line_count);
 
    
     printf("TIME: %lf\n\n", (end-start)/(CLOCKS_PER_SEC));

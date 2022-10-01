@@ -30,7 +30,6 @@ void swap_(string* xp, string* yp) {
     *yp = temp;
 }
 
-
 void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
     
     string* i = (string*)base;
@@ -47,9 +46,9 @@ void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
         return;
     }
     
-    debug_msg(3, ".................>SIZE : %d\n\n", (int)size);
+    debug_msg(4, ".................>SIZE : %d\n\n", (int)size);
     // if (DEBUG) printf(".................>SIZE : %d\n\n", (int)size);
-    debug_msg(3, " -> BEGIN: %s   END: %s\n\n", start->buffer, (start+size-1)->buffer);
+    debug_msg(4, " -> BEGIN: %s   END: %s\n\n", start->buffer, (start+size-1)->buffer);
     // if (DEBUG) printf(" -> BEGIN: %s   END: %s\n\n", start->buffer, (start+size-1)->buffer);
 
     j++;
@@ -57,7 +56,7 @@ void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
         do { 
             i++;
             if (i>=end) break;
-            debug_msg(3, "i = { %s }\n\n", i->buffer);
+            debug_msg(4, "i = { %s }\n\n", i->buffer);
             // if (DEBUG) printf("i = { %s }\n\n", i->buffer);
 
         } while (cmp_(i, start) < 0);
@@ -65,7 +64,7 @@ void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
 
         do {
             j--;
-            debug_msg(3, "j = { %s }\n\n", j->buffer);
+            debug_msg(4, "j = { %s }\n\n", j->buffer);
             // if (DEBUG) printf("j = { %s }\n\n", j->buffer);
 
         } while (cmp_(j, start) > 0);
@@ -85,3 +84,6 @@ void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
         swap_(i, j);
     }
 }
+
+
+

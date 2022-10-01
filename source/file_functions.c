@@ -68,9 +68,8 @@ int count_symbols(FILE* file) {
 
 }
 
-string* read_buffer(const char file_name[])
-{
-    
+string* read_buffer(const char file_name[]) {   
+
     string* elem = (string*) calloc (1, sizeof(*elem));
     
     assert(elem && "!!!  failed to allocate memory  !!!"); 
@@ -81,6 +80,7 @@ string* read_buffer(const char file_name[])
         perror("Damn: ");
         return elem;
     }
+    
     elem->length = count_symbols(file);
    
     char* buffer = (char*) calloc(elem->length, sizeof (char));
@@ -121,7 +121,7 @@ string* read_buffer(const char file_name[])
 
  
     debug_msg(3, "read objects: %d\n\n", read_objects);
-    // TODO:  ^ enum!!!!
+    // TODO:  ^ enum!!!
 
     fclose (file); // <rustam> + consider assigning null to freed resources (debatable)
 
@@ -151,6 +151,6 @@ void fprint_without_blank_lines (FILE* file, const string str[], int size) {
     for (int i = 0; i < size; i ++) {
 
         if (str[i].buffer[0] != '\0')
-            fprintf (file, " %s  \n", (str[i].buffer));
+            fprintf (file, " \t\t\t%s  \n", (str[i].buffer));
     }
 }
