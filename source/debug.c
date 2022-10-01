@@ -1,12 +1,12 @@
-#include "../header/debug.h"
+#include "debug.h" // TODO: fix
 
 void debug_msg(int mode, const char* format, ...) {
-    if (mode<=GLOBAL_DEBUG_MODE) {//??????????????????????????????
-        int d; 
-        double f;
-        char* s;
-        va_list factor;         // указатель на необязательный параметр
-        va_start(factor, format);   // устанавливаем указатель
+    if (mode<=GLOBAL_DEBUG_MODE) {
+        int d; // TODO: Please
+        double f; // TODO: Be
+        char* s; // Better than GNU developers
+        va_list factor;         
+        va_start(factor, format); 
         
         for(const char *c = format;*c; c++)
         {
@@ -15,7 +15,7 @@ void debug_msg(int mode, const char* format, ...) {
                 printf("%c", *c);
                 continue;
             }
-            switch(*++c)
+            switch(*++c) 
             {
                 case 'd': 
                     d = va_arg(factor, int);

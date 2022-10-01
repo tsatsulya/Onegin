@@ -24,7 +24,12 @@ void bubble_sort(string* array, int line_count) {
     }
 }
 
-void swap_(string* xp, string* yp);
+void swap_(string* xp, string* yp) {
+    string temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
 
 void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
     

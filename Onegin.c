@@ -1,4 +1,3 @@
-#include "utilities.h"
 #include "types.h"
 #include <time.h>
 #include "file_functions.h"
@@ -15,15 +14,16 @@ int main() {
 
     puts("\n\n------------------------------------ begin ------------------------------------\n\n"); //
 
-    int line_count = 0;
-    string* buf = read_buffer("input_files/in.txt", &line_count);
+    string* buf = read_buffer("input_files/in.txt");
 
-    FILE* file_out = fopen("SortedText.txt", "w");
+    int line_count = count_lines(buf-> buffer);
 
     if (errno) {
-        perror(" Damn: ");
+        perror(" Damn fopen: ");
         return EXIT_FAILURE;
     }
+
+    FILE* file_out = fopen("SortedText.txt", "w");
 
     if (!file_out) {
         perror(" Damn: ");
@@ -40,7 +40,7 @@ int main() {
 
 
     // bubble_sort(full_text, line_count);
-    qsort_(full_text, line_count, sizeof(string*), strcmp_);
+    qsort_(full_text, line_count, sizeof(string*), strcmp_reverse);
 
     double end = clock();
 
@@ -50,12 +50,10 @@ int main() {
    
     printf("TIME: %lf\n\n", (end-start)/(CLOCKS_PER_SEC));
 
-    fprint_without_blank_lines(full_text, line_count, file_out);
+    fprint_without_blank_lines(file_out, full_text, line_count);
 
     fclose(file_out);
-    //
 
-    // dtor
     free(buf);
     free(full_text);
     puts("\n\n------------------------------------ endm -------------------------------------\n\n"); 
@@ -93,8 +91,8 @@ static void dbg_print_lines(string* array, int line_count) {
 
     for (int i=0; i<line_count; ++i) {
 
-        printf("Line #%d: { %s }\n", i+1, (array+i)->buffer);
-        printf("Size of line : #%d is %d\n\n", i+1, (array+i)->length);
+        printf("Line #%d: { %s }\n", i+1, array[i].buffer);
+        printf("Size of line : #%d is %d\n\n", i+1, array[i].length);
 
     }
 }
@@ -113,3 +111,4 @@ static void dbg_print_lines(string* array, int line_count) {
 // ТЕПЕРЬ И САША
 // ЗДОРОВА ПАРНИ ТУТ РУСТАМ ВСЕМ ХАЙ
 // Хелло Рустам, как зовут?
+// ЗДОРОВА ПАРНИ, я все ещё здесь

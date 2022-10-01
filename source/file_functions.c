@@ -1,13 +1,43 @@
 
-#include "file_functions.h" // TODO: use -I compiler flag
+#include "file_functions.h"
 
-// Sometimes its a good idea to organize headers in meaningful structure, e.g.
-// clang/ento/ProgramState.h
+// void fopen_with_verification(FILE** file, const char file_name[]) {
+//     errno = 0;
+//     *file = fopen(file_name, "r");
+//     if (errno) 
+//         perror("file opening error: \n");
+// }
 
-// But in your case it lack it)
 
-// TODO: Include header
-int strings_spliting(char* full_line, string* array_of_lines); //
+// int fread_with_verification(char** buffer, size_t size_t, int size, FILE* file) {
+//     errno = 0;
+//     int read_objects = fread(*buffer, size_t, size, file);
+//     if (errno) 
+//         perror("file reading error: \n");
+//     return read_objects;
+// }
+
+// void fclose_with_verification(FILE* file) {
+//     errno = 0;
+//     fclose(file);
+//     if (errno) 
+//         perror("file opening error: \n");
+// }
+
+// void rewind_with_verification(FILE* file) {
+//     errno = 0;
+//     rewind(file);
+//     if (errno) 
+//         perror("rewind error: \n");
+// }
+
+
+// void fseek_with_verification(FILE *file, long offset, int whence) {
+//     errno = 0;
+//     fseek(file, offset, whence);
+//     if (errno) 
+//         perror("fseek error: \n");
+// }
 
 int count_lines(char* full_line) {
 
@@ -38,7 +68,7 @@ int count_symbols(FILE* file) {
 
 }
 
-string* read_buffer(const char file_name[], int* line_count)
+string* read_buffer(const char file_name[])
 {
     
     string* elem = (string*) calloc (1, sizeof(*elem));
@@ -93,8 +123,6 @@ string* read_buffer(const char file_name[], int* line_count)
     debug_msg(3, "read objects: %d\n\n", read_objects);
     // TODO:  ^ enum!!!!
 
-    *line_count = count_lines(elem -> buffer); // TODO: I'd rather move this out of
-
     fclose (file); // <rustam> + consider assigning null to freed resources (debatable)
 
     if (errno) perror(" Damn: \n");
@@ -113,12 +141,12 @@ string* create_arr_of_splited_lines (string* buf, int line_count) {
         assert(0);
     }
 
-    strings_spliting(buf->buffer, full_text);
+    split_string(buf->buffer, full_text);
 
     return full_text;
 }
 
-void fprint_without_blank_lines (const string str[], int size, FILE* file) {
+void fprint_without_blank_lines (FILE* file, const string str[], int size) {
 
     for (int i = 0; i < size; i ++) {
 
