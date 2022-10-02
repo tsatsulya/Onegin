@@ -42,7 +42,7 @@ void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
     if (size == 2) {
         int res = cmp_(i, j);
         if (res > 0) 
-            swap_(i, j);
+            swap__(i, j, sizeof(string));
         return;
     }
     
@@ -73,7 +73,7 @@ void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
 
         if (i > j) {
 
-            swap_(start, j);
+            swap__(start, j, sizeof(string));
 
             qsort_(start, j-start+1, width, strcmp_);
             qsort_(i, end-i+1, width+1, cmp_);
@@ -81,9 +81,80 @@ void qsort_(void* base, size_t size, size_t width, cmp_func cmp_) {
             break;
         } 
         
-        swap_(i, j);
+        swap__(i, j, sizeof(string));
     }
 }
 
 
+
+void swap__(void* buf1, void* buf2, size_t size_)
+{
+    assert (buf1 != NULL);
+    assert (buf2 != NULL);
+
+    short const int ll_bytes = sizeof (long long int),  //8
+                    l_bytes  = sizeof (int),            //4
+                    s_bytes  = sizeof (short int),      //2 
+                    c_bytes  = sizeof (char);           //1
+
+
+    long long int *buf1_ll = (long long int *) buf1;
+    long long int *buf2_ll = (long long int *) buf2;
+
+
+    int position = 0;
+
+    while (size_ >= ll_bytes)
+    {
+        long long int temp = 0;
+        temp = buf1_ll[position];
+        buf1_ll[position] = buf2_ll[position];
+        buf2_ll [position] = temp;
+
+        ++position;
+        size_ -= ll_bytes;
+    }
+
+    long int *buf1_l = (long int *) buf1;
+    long int *buf2_l = (long int *) buf2;
+
+    while (size_ >= l_bytes)
+    {
+        long int temp = 0;
+        temp = buf1_l[position];
+        buf1_l[position] = buf2_l [position];
+        buf2_l[position] = temp;
+
+        ++position;
+        size_ -= l_bytes;
+    }
+
+    short int *buf1_s = (short int*) buf1_l;
+    short int *buf2_s = (short int*) buf2_l;
+
+    while (size_ >= s_bytes)
+    {
+        short int temp = 0;
+        temp = buf1_s[position];
+        buf1_s[position] = buf2_s[position];
+        buf2_s[position] = temp;
+
+        ++position;
+        size_ -= s_bytes;
+    }
+
+    char *buf1_c = (char*)buf1_s;
+    char *buf2_c = (char*)buf2_s;
+
+    while (size_ >= s_bytes)
+    {
+        char temp = 0;
+        temp = buf1_c[position];
+        buf1_c[position] = buf2_c[position];
+        buf2_c[position] = temp;
+
+        ++position;
+        size_ -= c_bytes;
+    }
+}
 

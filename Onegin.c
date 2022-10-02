@@ -14,7 +14,8 @@ int main() {
 
     puts("\n\n------------------------------------ begin ------------------------------------\n\n"); //
 
-    string* buf = read_buffer("input_files/anin.txt");
+
+    string* buf = read_buffer("input_files/in.txt");
 
     int line_count = count_lines(buf->buffer);
 
@@ -40,7 +41,7 @@ int main() {
 
 
     // bubble_sort(full_text, line_count);
-    qsort_(full_text, line_count, sizeof(string*), strcmp_);
+    qsort_(full_text, line_count, sizeof(string*), strcmp_reverse);
 
     double end = clock();
 

@@ -11,6 +11,6 @@ enum step {
 };
 
 void bubble_sort(string* array, int line_count);
-
 void qsort_(void* base, size_t size, size_t width, cmp_func cmp_);
 void swap_(string* xp, string* yp);
+void swap__(void* buf1, void* buf2, size_t size_);

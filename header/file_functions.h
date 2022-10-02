@@ -17,3 +17,4 @@ string* create_arr_of_splited_lines (string* buf, int line_count);
 
 void fprint_without_blank_lines(FILE* file, const string str[], int size);
 
+void reading(const char input_file_path[], const char output_file_path[], string** full_text, int* line_count);
